@@ -1,0 +1,115 @@
+* {
+  box-sizing: border-box;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  padding: 10px;
+  background-color: #4671D5;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 920px;
+  height: 500px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 32%;
+  min-height: 20%;
+  background: lightgray;
+  border-radius: 5px;
+  padding: 7px;
+}
+
+.column-header {
+  margin-left: 5px;
+  font-size: 15px;
+}
+
+.column:nth-child(n+2) {
+  margin-left: 1%;
+}
+
+.note-container {
+  width: 100%;
+}
+
+.note-container.dragged {
+  width: 200px;
+  border-radius: 10px;
+  position: absolute;
+  z-index: 1000;
+  pointer-events: none;
+  outline: dashed red;
+  cursor: grabbing;
+}
+
+.note {
+  position: relative;
+  width: 100%;
+  min-height: 35px;
+  border-style: outset;
+  background-color: white;
+  border-radius: 3px;
+  padding: 5px;
+}
+
+.note:nth-child(n+2) {
+  margin-top: 5px;
+}
+
+.close-note {
+  position: absolute;
+  top: 0px;
+  left: 260px;
+  cursor: pointer;
+}
+
+.column-footer {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.add-note {
+  margin-top: 10px;
+  min-height: 50px;
+}
+
+.textarea {
+  width: 100%;
+  padding: 5px;
+  resize: none;
+}
+
+.add-note-footer {
+  margin-top: 5px;
+}
+
+.add-note-button {
+  width: 80px;
+  height: 30px;
+  background-color: green;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.add-note-close {
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
