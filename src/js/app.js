@@ -1,4 +1,4 @@
 import '../css/style.css';
-import App from '../components/app/App';
+import NoteController from '../components/note-controller/NoteController';
 
-const app = new App(document.querySelector('.application'));
+const noteController = new NoteController(document.querySelector('.wrapper'));

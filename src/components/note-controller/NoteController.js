@@ -5,15 +5,14 @@ export default class NoteController {
     this.wrapper = wrapper;
     this.memory = new Memory();
     this.actualElement = undefined;
+    this.shiftX = undefined;
+    this.shiftY = undefined;
 
-    // this.onMouseOver = this.onMouseOver.bind(this);
-    // this.onMouseOut = this.onMouseOut.bind(this);
-    // this.removeNote = this.removeNote.bind(this);
     this.showForm = this.showForm.bind(this);
     this.hideForm = this.hideForm.bind(this);
-    // this.onSubmit = this.onSubmit.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
+    this.secondOnMouseOver = this.secondOnMouseOver.bind(this);
 
     this.wrapper.addEventListener('mouseover', NoteController.onMouseOver);
     this.wrapper.addEventListener('mouseout', NoteController.onMouseOut);
@@ -21,6 +20,7 @@ export default class NoteController {
     this.wrapper.addEventListener('click', this.showForm);
     this.wrapper.addEventListener('click', this.hideForm);
     this.wrapper.addEventListener('mousedown', this.onMouseDown);
+    this.wrapper.addEventListener('submit', NoteController.onSubmit);
   }
 
   static get form() {
@@ -105,6 +105,7 @@ export default class NoteController {
       e.target.remove();
       footer.classList.toggle('hidden');
     }
+    Memory.save();
   }
 
   onMouseUp(e) {
@@ -113,9 +114,20 @@ export default class NoteController {
 
     this.actualElement.classList.remove('dragged');
     this.actualElement = undefined;
+    this.shiftY = undefined;
+    this.shiftX = undefined;
+    this.actualElement.classList.remove('dragged');
 
     document.documentElement.removeEventListener('mouseup', this.onMouseUp);
     document.documentElement.removeEventListener('mouseover', this.secondOnMouseOver);
+  }
+
+  secondOnMouseOver(e) {
+    if (!this.actualElement) {
+      return;
+    }
+    this.actualElement.style.top = `${e.pageY - this.shiftY}px`;
+    this.actualElement.style.left = `${e.pageX - this.shiftX}px`;
   }
 
   onMouseDown(e) {
@@ -126,46 +138,12 @@ export default class NoteController {
     e.preventDefault();
 
     this.actualElement = e.target.closest('.note-container');
-
-    let shiftX = e.clientX - this.actualElement.getBoundingClientRect().left;
-    let shiftY = e.clientY - this.actualElement.getBoundingClientRect().top;
-
     this.actualElement.classList.add('dragged');
+
+    this.shiftX = e.clientX - this.actualElement.getBoundingClientRect().left;
+    this.shiftY = e.clientY - this.actualElement.getBoundingClientRect().top;
+
     document.documentElement.addEventListener('mouseup', this.onMouseUp);
-    document.documentElement.addEventListener('mouseover', (e) => {
-      this.actualElement.style.top = e.pageY - shiftY + 'px';
-      this.actualElement.style.left = e.pageX - shiftX + 'px';
-    });
-    // const note = e.target.closest('.note-container');
-
-    // let shiftX = e.clientX - note.getBoundingClientRect().left;
-    // let shiftY = e.clientY - note.getBoundingClientRect().top;
-
-    // note.style.position = 'absolute';
-    // note.style.cursor = 'grabbing';
-    // note.style.zIndex = 1000;
-    // document.body.append(note);
-
-    // moveAt(e.pageX, e.pageY);
-
-    // function moveAt(pageX, pageY) {
-    //   note.style.left = pageX - shiftX + 'px';
-    //   note.style.top = pageY - shiftY + 'px';
-    // }
-
-    // function onMouseMove(event) {
-    //   moveAt(event.pageX, event.pageY);
-    // }
-    // document.addEventListener('mousemove', onMouseMove);
-
-    // note.onmouseup = function() {
-    //   document.removeEventListener('mousemove', onMouseMove);
-    //   note.onmouseup = null;
-    //   note.style.cursor = 'auto';
-    // };
-
-    // note.ondragstart = function() {
-    //   return false;
-    // };
+    document.documentElement.addEventListener('mouseover', this.secondOnMouseOver);
   }
 }
