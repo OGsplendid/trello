@@ -1,3 +1,4 @@
+import Sortable from 'sortablejs';
 import Memory from '../memory/Memory';
 
 export default class NoteController {
@@ -7,20 +8,18 @@ export default class NoteController {
     this.actualElement = undefined;
     this.shiftX = undefined;
     this.shiftY = undefined;
+    this.elementBelow = undefined;
 
     this.showForm = this.showForm.bind(this);
     this.hideForm = this.hideForm.bind(this);
     this.onMouseDown = this.onMouseDown.bind(this);
-    this.onMouseUp = this.onMouseUp.bind(this);
-    this.secondOnMouseOver = this.secondOnMouseOver.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
 
-    this.wrapper.addEventListener('mouseover', NoteController.onMouseOver);
-    this.wrapper.addEventListener('mouseout', NoteController.onMouseOut);
     this.wrapper.addEventListener('click', NoteController.removeNote);
     this.wrapper.addEventListener('click', this.showForm);
     this.wrapper.addEventListener('click', this.hideForm);
     this.wrapper.addEventListener('mousedown', this.onMouseDown);
-    this.wrapper.addEventListener('submit', NoteController.onSubmit);
+    this.wrapper.addEventListener('submit', this.onSubmit);
   }
 
   static get form() {
@@ -39,8 +38,8 @@ export default class NoteController {
     const note = `
       <div class="note-container">
         <div class="note">
-          <span class="note-text">${text}</span>
-          <span class="close-note hidden">x</span>
+          <div class="note-text">${text}</div>
+          <button type="button" class="close-note">✖</button>
         </div>
       </div>
     `;
@@ -51,24 +50,8 @@ export default class NoteController {
     if (!e.target.classList.contains('close-note')) {
       return;
     }
-    const deletable = e.target.closest('.note');
+    const deletable = e.target.closest('.note-container');
     deletable.remove();
-  }
-
-  static onMouseOver(e) {
-    if (!e.target.classList.contains('note')) {
-      return;
-    }
-    const closeNote = e.target.closest('.note').querySelector('.close-note');
-    closeNote.classList.toggle('hidden');
-  }
-
-  static onMouseOut(e) {
-    if (!e.target.classList.contains('note')) {
-      return;
-    }
-    const closeNote = e.target.closest('.note').querySelector('.close-note');
-    closeNote.classList.toggle('hidden');
   }
 
   showForm(e) {
@@ -92,58 +75,55 @@ export default class NoteController {
     form.remove();
   }
 
-  static onSubmit(e) {
+  onSubmit(e) {
     e.preventDefault();
 
-    const text = e.target.closest('.column').querySelector('.textarea').value;
+    const text = e.target.closest('.add-note').querySelector('.textarea').value;
     const cleanText = text.trim();
     if (cleanText) {
       const html = NoteController.makeNote(cleanText);
-      const aim = e.target.closest('.column').querySelector('.column-main');
+      const aim = e.target.closest('section').querySelector('.column-main');
       const footer = e.target.closest('.column').querySelector('.column-footer');
       aim.insertAdjacentHTML('beforeend', html);
       e.target.remove();
       footer.classList.toggle('hidden');
     }
-    Memory.save();
+    this.memory.saveItems();
   }
 
-  onMouseUp(e) {
-    const mouseUpTarget = e.target;
-    console.log(mouseUpTarget);
-
-    this.actualElement.classList.remove('dragged');
-    this.actualElement = undefined;
-    this.shiftY = undefined;
-    this.shiftX = undefined;
-    this.actualElement.classList.remove('dragged');
-
-    document.documentElement.removeEventListener('mouseup', this.onMouseUp);
-    document.documentElement.removeEventListener('mouseover', this.secondOnMouseOver);
-  }
-
-  secondOnMouseOver(e) {
-    if (!this.actualElement) {
-      return;
-    }
-    this.actualElement.style.top = `${e.pageY - this.shiftY}px`;
-    this.actualElement.style.left = `${e.pageX - this.shiftX}px`;
-  }
-
-  onMouseDown(e) {
-    if (!e.target.classList.contains('note')) {
-      return;
-    }
-
-    e.preventDefault();
-
-    this.actualElement = e.target.closest('.note-container');
-    this.actualElement.classList.add('dragged');
-
-    this.shiftX = e.clientX - this.actualElement.getBoundingClientRect().left;
-    this.shiftY = e.clientY - this.actualElement.getBoundingClientRect().top;
-
-    document.documentElement.addEventListener('mouseup', this.onMouseUp);
-    document.documentElement.addEventListener('mouseover', this.secondOnMouseOver);
+  onMouseDown() {
+    const sortableLeft = new Sortable(this.wrapper.querySelector('.main-left'), {
+      group: 'trello',
+      sort: true,
+      ghostClass: 'ghost',
+      dragClass: 'dragged',
+      onChoose: function(e) {
+        e.target.classList.add('grabbing');
+    },
+    onUnchoose: function(e) {
+        e.target.classList.remove('grabbing');
+    },
+    onStart: function(e) {
+        e.target.classList.add('grabbing');
+    },
+    onEnd: function(e) {
+        e.target.classList.remove('grabbing');
+    },
+  onMove: function(e) {
+        e.target.classList.add('grabbing');
+    },
+    });
+    const sortableCenter = new Sortable(this.wrapper.querySelector('.main-center'), {
+      group: 'trello',
+      sort: true,
+      ghostClass: 'ghost',
+      dragClass: 'dragged',
+    });
+    const sortableRight = new Sortable(this.wrapper.querySelector('.main-right'), {
+      group: 'trello',
+      sort: true,
+      ghostClass: 'ghost',
+      dragClass: 'dragged',
+    });
   }
 }
