@@ -97,21 +97,11 @@ export default class NoteController {
       sort: true,
       ghostClass: 'ghost',
       dragClass: 'dragged',
-      onChoose: function(e) {
-        e.target.classList.add('grabbing');
-    },
-    onUnchoose: function(e) {
-        e.target.classList.remove('grabbing');
-    },
-    onStart: function(e) {
-        e.target.classList.add('grabbing');
-    },
-    onEnd: function(e) {
-        e.target.classList.remove('grabbing');
-    },
-  onMove: function(e) {
-        e.target.classList.add('grabbing');
-    },
+      onChoose: (e) => e.target.classList.add('grabbing'),
+      onUnchoose: (e) => e.target.classList.remove('grabbing'),
+      onStart: (e) => e.target.classList.add('grabbing'),
+      onEnd: (e) => e.target.classList.remove('grabbing'),
+      onMove: (e) => e.target.classList.add('dragged'),
     });
     const sortableCenter = new Sortable(this.wrapper.querySelector('.main-center'), {
       group: 'trello',
