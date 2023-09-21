@@ -113,13 +113,8 @@
 }
 
 .dragged {
-  cursor: grab !important;
-}
-
-.grabbing {
-  width: 100%;
-  border-radius: 10px;
   cursor: grabbing !important;
+  background-color: orange;
 }
 
 
