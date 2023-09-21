@@ -5,10 +5,6 @@ export default class NoteController {
   constructor(wrapper) {
     this.wrapper = wrapper;
     this.memory = new Memory();
-    this.actualElement = undefined;
-    this.shiftX = undefined;
-    this.shiftY = undefined;
-    this.elementBelow = undefined;
 
     this.showForm = this.showForm.bind(this);
     this.hideForm = this.hideForm.bind(this);
@@ -19,8 +15,19 @@ export default class NoteController {
     this.wrapper.addEventListener('click', this.showForm);
     this.wrapper.addEventListener('click', this.hideForm);
     this.wrapper.addEventListener('mousedown', this.onMouseDown);
-    this.wrapper.addEventListener('submit', this.onSubmit);
+    // document.documentElement.addEventListener('mousedown', NoteController.ifGrabbed);
+    // document.documentElement.addEventListener('mouseup', NoteController.ifUngrabbed);
   }
+
+  // static ifGrabbed(e) {
+  //   if (e.target.closest('.note-container')) {
+  //     document.documentElement.style.cursor = 'grabbing';
+  //   }
+  // }
+
+  // static ifUngrabbed(e) {
+  //   document.documentElement.style.cursor = 'auto';
+  // }
 
   static get form() {
     return `
@@ -61,8 +68,8 @@ export default class NoteController {
     const formHTML = NoteController.form;
     e.target.insertAdjacentHTML('afterend', formHTML);
     const form = e.target.closest('.column').querySelector('.add-note');
-    form.addEventListener('submit', this.onSubmit);
     e.target.classList.toggle('hidden');
+    form.addEventListener('submit', this.onSubmit);
   }
 
   hideForm(e) {
@@ -95,23 +102,21 @@ export default class NoteController {
     const sortableLeft = new Sortable(this.wrapper.querySelector('.main-left'), {
       group: 'trello',
       sort: true,
+      animation: 300,
       ghostClass: 'ghost',
       dragClass: 'dragged',
-      onChoose: (e) => e.target.classList.add('grabbing'),
-      onUnchoose: (e) => e.target.classList.remove('grabbing'),
-      onStart: (e) => e.target.classList.add('grabbing'),
-      onEnd: (e) => e.target.classList.remove('grabbing'),
-      onMove: (e) => e.target.classList.add('dragged'),
     });
     const sortableCenter = new Sortable(this.wrapper.querySelector('.main-center'), {
       group: 'trello',
       sort: true,
+      animation: 300,
       ghostClass: 'ghost',
       dragClass: 'dragged',
     });
     const sortableRight = new Sortable(this.wrapper.querySelector('.main-right'), {
       group: 'trello',
       sort: true,
+      animation: 300,
       ghostClass: 'ghost',
       dragClass: 'dragged',
     });
